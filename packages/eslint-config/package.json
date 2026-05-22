@@ -1,0 +1,11 @@
+{
+    "name": "@coffeeflow/eslint-config",
+    "version": "1.0.0",
+    "description": "Configuración ESLint compartida para CoffeeFlow.",
+    "private": true,
+    "type": "module",
+    "exports": {
+        "./base": "./base.js",
+        "./next": "./next.js"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "@coffeeflow/database",
+    "version": "1.0.0",
+    "description": "Cliente y utilidades de Supabase para CoffeeFlow.",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "dependencies": {
+        "@supabase/ssr": "^0.10.3",
+        "@supabase/supabase-js": "^2.106.0"
+    }
+}

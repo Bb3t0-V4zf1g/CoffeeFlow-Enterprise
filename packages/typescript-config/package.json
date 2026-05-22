@@ -1,0 +1,11 @@
+{
+    "name": "@coffeeflow/typescript-config",
+    "version": "1.0.0",
+    "description": "Configuración TypeScript compartida para CoffeeFlow.",
+    "private": true,
+    "type": "module",
+    "exports": {
+        "./base": "./base.json",
+        "./nextjs": "./nextjs.json"
+    }
+}

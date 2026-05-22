@@ -1,0 +1,14 @@
+{
+    "name": "@coffeeflow/ui",
+    "version": "1.0.0",
+    "description": "Componentes compartidos para CoffeeFlow.",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "peerDependencies": {
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0"
+    }
+}
