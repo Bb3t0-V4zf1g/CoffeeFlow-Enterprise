@@ -87,6 +87,17 @@ Para cargar datos de demostración (categorías, productos, recetas) revisa `pac
 - Seguimiento de pedidos (público): `apps/pos/src/app/seguimiento-pedido/page.tsx`
 - Acción para marcar entregado: `apps/pos/src/app/actions.ts`
 
+**Rutas y Endpoints (local)**
+
+- **KDS (pantalla cocina)**: http://localhost:3000/ — app: `apps/kds`
+- **Admin (backoffice)**: http://localhost:3001/ — app: `apps/admin`
+- **POS (caja)**: http://localhost:3002/ — app: `apps/pos`
+- **POS — Seguimiento público**: http://localhost:3002/seguimiento-pedido — página pública para que clientes consulten su ticket (`apps/pos/src/app/seguimiento-pedido/page.tsx`)
+- **POS — Marcar entregado**: http://localhost:3002/marcar-entregado — acción y UI para marcar pedidos como entregados (`apps/pos/src/app/marcar-entregado/page.tsx`)
+- **API (ejemplos)**: revisa `apps/*/src/app/api` para endpoints; ejemplo usado en desarrollo: `/api/estado-platillos` (revalida/consulta estado de platillos)
+
+Nota: los puertos son los más comunes en este proyecto, pero `turbo dev` puede reasignarlos si alguno ya está en uso — revisa la consola para las URLs exactas.
+
 ---
 
 ¿Quieres que añada una sección específica para despliegue (Vercel/Netlify) o ejemplos de llamadas a la API de Supabase?
