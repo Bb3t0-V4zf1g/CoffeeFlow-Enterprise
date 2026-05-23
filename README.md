@@ -98,6 +98,8 @@ Para cargar datos de demostración (categorías, productos, recetas) revisa `pac
 
 Nota: los puertos son los más comunes en este proyecto, pero `turbo dev` puede reasignarlos si alguno ya está en uso — revisa la consola para las URLs exactas.
 
+Nota histórica: originalmente `apps/admin`, `apps/kds` y `apps/pos` estaban configuradas como submódulos. Ahora todos los contenidos de `apps/*` están incluidos directamente en este repositorio, por lo que al clonar o descargar desde GitHub las carpetas contendrán sus archivos sin necesidad de inicializar submódulos.
+
 ---
 
 ¿Quieres que añada una sección específica para despliegue (Vercel/Netlify) o ejemplos de llamadas a la API de Supabase?
