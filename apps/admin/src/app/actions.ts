@@ -1,0 +1,177 @@
+"use server";
+
+import { createSupabaseServiceClient } from "@coffeeflow/database";
+import { revalidatePath } from "next/cache";
+
+export async function createProductAction(formData: FormData) {
+    const name = String(formData.get("name") ?? "").trim();
+    const priceValue = Number(String(formData.get("price") ?? "0"));
+    const categoryId = String(formData.get("categoryId") ?? "").trim() || null;
+
+    if (!name || !Number.isFinite(priceValue) || priceValue <= 0) {
+        return;
+    }
+
+    const client = createSupabaseServiceClient();
+
+    const { error } = await client.from("products").insert({
+        name,
+        description: null,
+        price_cents: Math.round(priceValue * 100),
+        category_id: categoryId,
+        is_active: true,
+    });
+
+    if (error) {
+        throw error;
+    }
+
+    revalidatePath("/");
+}
+
+export async function updateProductPriceAction(formData: FormData) {
+    const productId = String(formData.get("productId") ?? "").trim();
+    const priceValue = Number(String(formData.get("price") ?? "0"));
+
+    if (!productId || !Number.isFinite(priceValue) || priceValue <= 0) {
+        return;
+    }
+
+    const client = createSupabaseServiceClient();
+
+    const { error } = await client
+        .from("products")
+        .update({ price_cents: Math.round(priceValue * 100) })
+        .eq("id", productId);
+
+    if (error) {
+        throw error;
+    }
+
+    revalidatePath("/");
+    revalidatePath("/estado-platillos");
+}
+
+export async function toggleProductActiveAction(formData: FormData) {
+    const productId = String(formData.get("productId") ?? "").trim();
+    const isActiveValue = String(formData.get("isActive") ?? "").trim();
+
+    if (!productId || (isActiveValue !== "true" && isActiveValue !== "false")) {
+        return;
+    }
+
+    const client = createSupabaseServiceClient();
+
+    const { error } = await client
+        .from("products")
+        .update({ is_active: isActiveValue === "true" })
+        .eq("id", productId);
+
+    if (error) {
+        throw error;
+    }
+
+    revalidatePath("/");
+    revalidatePath("/estado-platillos");
+}
+
+export async function updateInventoryAction(formData: FormData) {
+    const inventoryItemId = String(
+        formData.get("inventoryItemId") ?? "",
+    ).trim();
+    const currentQuantity = Number(
+        String(formData.get("currentQuantity") ?? "0"),
+    );
+    const minimumQuantity = Number(
+        String(formData.get("minimumQuantity") ?? "0"),
+    );
+
+    if (
+        !inventoryItemId ||
+        !Number.isFinite(currentQuantity) ||
+        !Number.isFinite(minimumQuantity) ||
+        currentQuantity < 0 ||
+        minimumQuantity < 0
+    ) {
+        return;
+    }
+
+    const client = createSupabaseServiceClient();
+
+    const { error } = await client
+        .from("inventory_items")
+        .update({
+            current_quantity: currentQuantity,
+            minimum_quantity: minimumQuantity,
+        })
+        .eq("id", inventoryItemId);
+
+    if (error) {
+        throw error;
+    }
+
+    revalidatePath("/");
+    revalidatePath("/estado-platillos");
+}
+
+export async function syncRecipeAction(formData: FormData) {
+    const productId = String(formData.get("productId") ?? "").trim();
+    const inventoryItemId = String(
+        formData.get("inventoryItemId") ?? "",
+    ).trim();
+    const quantityUsed = Number(String(formData.get("quantityUsed") ?? "1"));
+
+    if (
+        !productId ||
+        !inventoryItemId ||
+        !Number.isFinite(quantityUsed) ||
+        quantityUsed <= 0
+    ) {
+        return;
+    }
+
+    const client = createSupabaseServiceClient();
+
+    const { error } = await client.from("recipes").upsert(
+        {
+            product_id: productId,
+            inventory_item_id: inventoryItemId,
+            quantity_used: quantityUsed,
+        },
+        {
+            onConflict: "product_id,inventory_item_id",
+        },
+    );
+
+    if (error) {
+        throw error;
+    }
+
+    revalidatePath("/");
+    revalidatePath("/estado-platillos");
+}
+
+export async function restockCriticalAction() {
+    const client = createSupabaseServiceClient();
+
+    const { data: inventoryItems, error } = await client
+        .from("inventory_items")
+        .select("id, current_quantity, minimum_quantity");
+
+    if (error) {
+        throw error;
+    }
+
+    const updates = (inventoryItems ?? [])
+        .filter((item) => item.current_quantity < item.minimum_quantity)
+        .map((item) =>
+            client
+                .from("inventory_items")
+                .update({ current_quantity: item.minimum_quantity + 10 })
+                .eq("id", item.id),
+        );
+
+    await Promise.all(updates);
+    revalidatePath("/");
+    revalidatePath("/estado-platillos");
+}

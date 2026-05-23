@@ -1,0 +1,30 @@
+{
+    "name": "kds",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "eslint ."
+    },
+    "dependencies": {
+        "@coffeeflow/database": "file:../../packages/database",
+        "@coffeeflow/ui": "file:../../packages/ui",
+        "next": "16.2.6",
+        "react": "19.2.4",
+        "react-dom": "19.2.4"
+    },
+    "devDependencies": {
+        "@coffeeflow/eslint-config": "file:../../packages/eslint-config",
+        "@coffeeflow/typescript-config": "file:../../packages/typescript-config",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "16.2.6",
+        "tailwindcss": "^4",
+        "typescript": "^5"
+    }
+}
