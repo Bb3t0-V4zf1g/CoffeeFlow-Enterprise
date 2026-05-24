@@ -48,17 +48,29 @@ function translateStatus(status: RecentOrder["status"]) {
 export function PosWorkbench({
     products,
     recentOrders,
+    categories,
 }: {
     products: Product[];
     recentOrders: RecentOrder[];
+    categories: string[];
 }) {
     const router = useRouter();
     const [cart, setCart] = useState<CartMap>({});
     const [notes, setNotes] = useState("");
     const [message, setMessage] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
+    const [selectedCategory, setSelectedCategory] = useState("Todas");
 
     const cartEntries = useMemo(() => Object.entries(cart), [cart]);
+    const filteredProducts = useMemo(
+        () =>
+            selectedCategory === "Todas"
+                ? products
+                : products.filter(
+                      (product) => product.categoryName === selectedCategory,
+                  ),
+        [products, selectedCategory],
+    );
 
     const cartItems = cartEntries
         .map(([productId, quantity]) => {
@@ -125,11 +137,39 @@ export function PosWorkbench({
                     </span>
                 </div>
 
+                <div className="mb-5 flex flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setSelectedCategory("Todas")}
+                        className={`category-filter-button rounded-full border px-3 py-1.5 text-xs font-semibold transition hover:-translate-y-0.5 ${
+                            selectedCategory === "Todas"
+                                ? "border-slate-900 bg-slate-900 text-white"
+                                : "border-slate-300 bg-white text-slate-700"
+                        }`}
+                    >
+                        Todas
+                    </button>
+                    {categories.map((category) => (
+                        <button
+                            key={category}
+                            type="button"
+                            onClick={() => setSelectedCategory(category)}
+                            className={`category-filter-button rounded-full border px-3 py-1.5 text-xs font-semibold transition hover:-translate-y-0.5 ${
+                                selectedCategory === category
+                                    ? "border-slate-900 bg-slate-900 text-white"
+                                    : "border-slate-300 bg-white text-slate-700"
+                            }`}
+                        >
+                            {category}
+                        </button>
+                    ))}
+                </div>
+
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    {products.map((product) => (
+                    {filteredProducts.map((product) => (
                         <article
                             key={product.id}
-                            className="rounded-3xl border border-slate-200 bg-slate-50 p-5"
+                            className="rounded-3xl border border-slate-200 bg-slate-50 p-5 hover:-translate-y-1 hover:shadow-md"
                         >
                             <div className="flex items-start justify-between gap-3">
                                 <div>
@@ -140,9 +180,13 @@ export function PosWorkbench({
                                         {product.name}
                                     </h3>
                                 </div>
-                                <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
-                                    {money.format(product.price_cents / 100)}
-                                </span>
+                                <div className="flex flex-col items-end gap-2">
+                                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
+                                        {money.format(
+                                            product.price_cents / 100,
+                                        )}
+                                    </span>
+                                </div>
                             </div>
                             <p className="mt-3 min-h-12 text-sm text-slate-600">
                                 {product.description ??
@@ -158,6 +202,11 @@ export function PosWorkbench({
                             </Button>
                         </article>
                     ))}
+                    {filteredProducts.length === 0 ? (
+                        <article className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600 md:col-span-2 xl:col-span-3">
+                            No hay productos disponibles en esta categoría.
+                        </article>
+                    ) : null}
                 </div>
             </section>
 
@@ -280,7 +329,7 @@ export function PosWorkbench({
                             recentOrders.map((order) => (
                                 <article
                                     key={order.id}
-                                    className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                                    className="rounded-2xl border border-slate-200 bg-slate-50 p-4 hover:-translate-y-0.5"
                                 >
                                     <div className="flex items-center justify-between gap-4">
                                         <div>

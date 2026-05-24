@@ -1,6 +1,6 @@
 import { markOrderServed } from "../actions";
 import { loadOrderTrackingSnapshot } from "../lib/order-tracking";
-import { Button } from "@coffeeflow/ui";
+import { Button, ThemeToggle } from "@coffeeflow/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +24,7 @@ export default async function MarcarEntregadoPage() {
                                 retirarlo de la lista de preparación.
                             </p>
                         </div>
+                        <ThemeToggle />
                     </div>
                 </header>
 
@@ -36,7 +37,7 @@ export default async function MarcarEntregadoPage() {
                         snapshot.tickets.map((ticket) => (
                             <article
                                 key={ticket.id}
-                                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm flex items-center justify-between"
+                                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm flex items-center justify-between hover:-translate-y-0.5"
                             >
                                 <div>
                                     <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">

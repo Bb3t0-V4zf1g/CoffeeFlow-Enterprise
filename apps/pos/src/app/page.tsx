@@ -2,6 +2,7 @@ import {
     createSupabaseServiceClient,
     ensureDemoData,
 } from "@coffeeflow/database";
+import { ThemeToggle } from "@coffeeflow/ui";
 import Link from "next/link";
 import { PosWorkbench } from "./pos-workbench";
 
@@ -27,13 +28,6 @@ type RecentOrderRow = {
     notes: string | null;
 };
 
-type OrderItemRow = {
-    order_id: string;
-    quantity: number;
-    line_total_cents: number;
-    product_id: string;
-};
-
 const money = new Intl.NumberFormat("es-MX", {
     style: "currency",
     currency: "MXN",
@@ -48,7 +42,6 @@ export default async function Home() {
         { data: productsData },
         { data: categoriesData },
         { data: ordersData },
-        { data: orderItemsData },
     ] = await Promise.all([
         client
             .from("products")
@@ -65,9 +58,6 @@ export default async function Home() {
             .select("id, status, total_cents, created_at, notes")
             .order("created_at", { ascending: false })
             .limit(18),
-        client
-            .from("order_items")
-            .select("order_id, quantity, line_total_cents, product_id"),
     ]);
 
     const categoryMap = new Map(
@@ -85,6 +75,10 @@ export default async function Home() {
         categoryName:
             categoryMap.get(product.category_id ?? "") ?? "Sin categoría",
     }));
+
+    const categoryNames = Array.from(
+        new Set(products.map((product) => product.categoryName)),
+    ).sort((a, b) => a.localeCompare(b, "es-MX"));
 
     const recentOrders = (ordersData ?? []) as RecentOrderRow[];
     const pendingOrders = recentOrders.filter(
@@ -131,6 +125,9 @@ export default async function Home() {
                         </div>
 
                         <div className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 shadow-sm md:min-w-80 md:grid-cols-2">
+                            <div className="md:col-span-2 flex justify-end">
+                                <ThemeToggle />
+                            </div>
                             <div>
                                 <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
                                     Productos
@@ -149,7 +146,7 @@ export default async function Home() {
                             </div>
                             <Link
                                 href="/seguimiento-pedido"
-                                className="md:col-span-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-slate-50"
+                                className="md:col-span-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
                             >
                                 Abrir seguimiento público de tickets
                             </Link>
@@ -186,7 +183,7 @@ export default async function Home() {
                     ].map((metric) => (
                         <article
                             key={metric.title}
-                            className="rounded-4xl border border-slate-200 bg-white p-5 shadow-sm"
+                            className="rounded-4xl border border-slate-200 bg-white p-5 shadow-sm hover:-translate-y-0.5"
                         >
                             <div className="flex items-start justify-between gap-3">
                                 <div>
@@ -198,7 +195,7 @@ export default async function Home() {
                                     </p>
                                 </div>
                                 <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
-                                    Live
+                                    En vivo
                                 </span>
                             </div>
                             <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -208,7 +205,11 @@ export default async function Home() {
                     ))}
                 </div>
 
-                <PosWorkbench products={products} recentOrders={recentOrders} />
+                <PosWorkbench
+                    products={products}
+                    recentOrders={recentOrders}
+                    categories={categoryNames}
+                />
             </section>
         </main>
     );

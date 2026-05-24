@@ -38,3 +38,67 @@ a {
     color: inherit;
     text-decoration: none;
 }
+
+[data-theme="dark"] body {
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(245, 158, 11, 0.18),
+            transparent 30%
+        ),
+        #020617;
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] main {
+    background: #020617 !important;
+}
+
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-white\/90,
+[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-slate-50\/80,
+[data-theme="dark"] .bg-slate-100,
+[data-theme="dark"] .bg-amber-50,
+[data-theme="dark"] .bg-amber-100,
+[data-theme="dark"] .bg-amber-50\/80,
+[data-theme="dark"] .bg-emerald-50,
+[data-theme="dark"] .bg-emerald-100,
+[data-theme="dark"] .bg-emerald-50\/80,
+[data-theme="dark"] .bg-sky-50,
+[data-theme="dark"] .bg-sky-100,
+[data-theme="dark"] .bg-sky-50\/80 {
+    background-color: #0f172a !important;
+}
+
+[data-theme="dark"] .text-slate-950,
+[data-theme="dark"] .text-slate-900,
+[data-theme="dark"] .text-black,
+[data-theme="dark"] .text-amber-900,
+[data-theme="dark"] .text-emerald-900,
+[data-theme="dark"] .text-sky-900 {
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .text-slate-700,
+[data-theme="dark"] .text-slate-600,
+[data-theme="dark"] .text-slate-500 {
+    color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .border-slate-200,
+[data-theme="dark"] .border-slate-200\/80,
+[data-theme="dark"] .border-slate-300 {
+    border-color: #334155 !important;
+}
+
+article,
+section,
+a,
+button {
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        background-color 180ms ease,
+        border-color 180ms ease;
+}

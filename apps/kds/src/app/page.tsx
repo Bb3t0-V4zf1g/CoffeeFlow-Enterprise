@@ -2,7 +2,7 @@ import {
     createSupabaseServiceClient,
     ensureDemoData,
 } from "@coffeeflow/database";
-import { StatusPill } from "@coffeeflow/ui";
+import { StatusPill, ThemeToggle } from "@coffeeflow/ui";
 import { updateOrderStatusAction } from "./actions";
 
 type OrderRow = {
@@ -132,6 +132,9 @@ export default async function Home() {
                         </div>
 
                         <div className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 shadow-sm md:min-w-80 md:grid-cols-3">
+                            <div className="md:col-span-3 flex justify-end">
+                                <ThemeToggle />
+                            </div>
                             <div>
                                 <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
                                     Pendientes
@@ -169,7 +172,7 @@ export default async function Home() {
                         return (
                             <section
                                 key={column.title}
-                                className={`rounded-4xl border border-slate-200 p-5 shadow-sm ${column.surface}`}
+                                className={`rounded-4xl border border-slate-200 p-5 shadow-sm hover:-translate-y-0.5 ${column.surface}`}
                             >
                                 <div className="mb-4 flex items-center justify-between gap-3">
                                     <h2 className="text-lg font-semibold text-slate-950">
@@ -195,7 +198,7 @@ export default async function Home() {
                                             return (
                                                 <article
                                                     key={order.id}
-                                                    className="rounded-3xl border border-slate-200 bg-white p-4 text-slate-700 shadow-sm"
+                                                    className="rounded-3xl border border-slate-200 bg-white p-4 text-slate-700 shadow-sm hover:-translate-y-0.5"
                                                 >
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div>

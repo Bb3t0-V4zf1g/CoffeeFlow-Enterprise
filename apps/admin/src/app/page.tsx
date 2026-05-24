@@ -14,15 +14,36 @@ import {
     loadAdminSnapshot,
 } from "./lib/admin-data";
 import {
+    createCategoryAction,
     createProductAction,
+    deleteCategoryAction,
     restockCriticalAction,
     syncRecipeAction,
     toggleProductActiveAction,
+    updateCategoryAction,
     updateInventoryAction,
     updateProductPriceAction,
 } from "./actions";
+import { ThemeToggle } from "@coffeeflow/ui";
 
 export const dynamic = "force-dynamic";
+
+function translateOrderStatus(status: string) {
+    switch (status) {
+        case "pending":
+            return "Pendiente";
+        case "in_progress":
+            return "En preparación";
+        case "ready":
+            return "Listo";
+        case "served":
+            return "Entregado";
+        case "cancelled":
+            return "Cancelado";
+        default:
+            return status;
+    }
+}
 
 export default async function Home() {
     const snapshot = await loadAdminSnapshot();
@@ -39,31 +60,21 @@ export default async function Home() {
     const lowStockCount = snapshot.inventory.filter(
         (item) => item.current_quantity < item.minimum_quantity,
     ).length;
-    const readyOrders = snapshot.orders.filter(
-        (order) => order.status === "ready" || order.status === "served",
+    const servedOrders = snapshot.orders.filter(
+        (order) => order.status === "served",
     ).length;
     const progressPercent =
-        totalOrders === 0 ? 0 : Math.round((readyOrders / totalOrders) * 100);
+        totalOrders === 0 ? 0 : Math.round((servedOrders / totalOrders) * 100);
 
     return (
         <AdminShell
             activeHref="/"
-            eyebrow="Centro de operaciones"
-            title="Dashboard de cafetería con foco operativo"
-            description="Supervisa el menú, los logs de ventas y el ritmo del turno con una interfaz clara, accesible y consistente."
-            summary={
-                <>
-                    <p className="font-semibold text-slate-950">
-                        Turno en marcha
-                    </p>
-                    <p className="text-slate-600">
-                        {readyOrders} pedidos listos · {lowStockCount} insumos
-                        críticos · {formatMoneyMXN(totalSales)} acumulados
-                    </p>
-                </>
-            }
+            eyebrow="Panel operativo"
+            title="Panel de administración"
+            description="Operación diaria, inventario y ventas en una sola vista."
+            headerActions={<ThemeToggle />}
         >
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-3">
                 <StatCard
                     title="Pedidos registrados"
                     value={String(totalOrders)}
@@ -216,7 +227,9 @@ export default async function Home() {
                                                               : "emerald"
                                                     }
                                                 >
-                                                    {order.status}
+                                                    {translateOrderStatus(
+                                                        order.status,
+                                                    )}
                                                 </ToneChip>
                                             </div>
                                             <div className="col-span-3 text-slate-600">
@@ -253,6 +266,108 @@ export default async function Home() {
                     title="Acciones de gestión"
                     subtitle="Agregar, editar, quitar y ajustar inventario desde el mismo panel operativo."
                 >
+                    <form
+                        action={createCategoryAction}
+                        className="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4"
+                    >
+                        <h3 className="text-sm font-semibold text-slate-900">
+                            Crear categoría
+                        </h3>
+                        <div>
+                            <FieldLabel htmlFor="category-name">
+                                Nombre de categoría
+                            </FieldLabel>
+                            <input
+                                id="category-name"
+                                name="name"
+                                placeholder="Bebidas calientes"
+                                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                            />
+                        </div>
+                        <AdminButton type="submit" variant="secondary">
+                            Crear categoría
+                        </AdminButton>
+                    </form>
+
+                    <form
+                        action={updateCategoryAction}
+                        className="mt-4 space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4"
+                    >
+                        <h3 className="text-sm font-semibold text-slate-900">
+                            Editar categoría
+                        </h3>
+                        <div className="grid gap-3 md:grid-cols-2">
+                            <div>
+                                <FieldLabel htmlFor="edit-category-id">
+                                    Categoría
+                                </FieldLabel>
+                                <select
+                                    id="edit-category-id"
+                                    name="categoryId"
+                                    defaultValue={
+                                        snapshot.categories[0]?.id ?? ""
+                                    }
+                                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                                >
+                                    {snapshot.categories.map((category) => (
+                                        <option
+                                            key={category.id}
+                                            value={category.id}
+                                        >
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <FieldLabel htmlFor="edit-category-name">
+                                    Nuevo nombre
+                                </FieldLabel>
+                                <input
+                                    id="edit-category-name"
+                                    name="name"
+                                    placeholder="Nuevo nombre"
+                                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                                />
+                            </div>
+                        </div>
+                        <AdminButton type="submit" variant="secondary">
+                            Guardar categoría
+                        </AdminButton>
+                    </form>
+
+                    <form
+                        action={deleteCategoryAction}
+                        className="mt-4 space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-4"
+                    >
+                        <h3 className="text-sm font-semibold text-slate-900">
+                            Eliminar categoría
+                        </h3>
+                        <div>
+                            <FieldLabel htmlFor="delete-category-id">
+                                Categoría a eliminar
+                            </FieldLabel>
+                            <select
+                                id="delete-category-id"
+                                name="categoryId"
+                                defaultValue={snapshot.categories[0]?.id ?? ""}
+                                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                            >
+                                {snapshot.categories.map((category) => (
+                                    <option
+                                        key={category.id}
+                                        value={category.id}
+                                    >
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <AdminButton type="submit" variant="secondary">
+                            Eliminar categoría
+                        </AdminButton>
+                    </form>
+
                     <form action={createProductAction} className="space-y-4">
                         <div>
                             <FieldLabel htmlFor="product-name">

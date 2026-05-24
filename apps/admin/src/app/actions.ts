@@ -29,6 +29,64 @@ export async function createProductAction(formData: FormData) {
     revalidatePath("/");
 }
 
+export async function createCategoryAction(formData: FormData) {
+    const name = String(formData.get("name") ?? "").trim();
+
+    if (!name) {
+        return;
+    }
+
+    const client = createSupabaseServiceClient();
+    const { error } = await client.from("product_categories").insert({ name });
+
+    if (error) {
+        throw error;
+    }
+
+    revalidatePath("/");
+}
+
+export async function updateCategoryAction(formData: FormData) {
+    const categoryId = String(formData.get("categoryId") ?? "").trim();
+    const name = String(formData.get("name") ?? "").trim();
+
+    if (!categoryId || !name) {
+        return;
+    }
+
+    const client = createSupabaseServiceClient();
+    const { error } = await client
+        .from("product_categories")
+        .update({ name })
+        .eq("id", categoryId);
+
+    if (error) {
+        throw error;
+    }
+
+    revalidatePath("/");
+}
+
+export async function deleteCategoryAction(formData: FormData) {
+    const categoryId = String(formData.get("categoryId") ?? "").trim();
+
+    if (!categoryId) {
+        return;
+    }
+
+    const client = createSupabaseServiceClient();
+    const { error } = await client
+        .from("product_categories")
+        .delete()
+        .eq("id", categoryId);
+
+    if (error) {
+        throw error;
+    }
+
+    revalidatePath("/");
+}
+
 export async function updateProductPriceAction(formData: FormData) {
     const productId = String(formData.get("productId") ?? "").trim();
     const priceValue = Number(String(formData.get("price") ?? "0"));

@@ -13,6 +13,7 @@ type AdminShellProps = {
     title: string;
     description: string;
     summary?: ReactNode;
+    headerActions?: ReactNode;
     children: ReactNode;
 };
 
@@ -40,6 +41,7 @@ export function AdminShell({
     title,
     description,
     summary,
+    headerActions,
     children,
 }: AdminShellProps) {
     return (
@@ -71,6 +73,12 @@ export function AdminShell({
                         ) : null}
                     </div>
 
+                    {headerActions ? (
+                        <div className="mt-4 flex justify-end">
+                            {headerActions}
+                        </div>
+                    ) : null}
+
                     <nav
                         aria-label="Admin navigation"
                         className="mt-6 grid gap-3 md:grid-cols-2"
@@ -82,9 +90,9 @@ export function AdminShell({
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`rounded-2xl border px-4 py-4 transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
+                                    className={`rounded-2xl border px-4 py-4 transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 hover:-translate-y-0.5 ${
                                         isActive
-                                            ? "border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-950/15"
+                                            ? "border-sky-700 bg-sky-50 text-sky-700 shadow-sm"
                                             : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
                                     }`}
                                 >
@@ -106,7 +114,7 @@ export function AdminShell({
                                         <span
                                             className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
                                                 isActive
-                                                    ? "bg-white/10 text-white ring-white/10"
+                                                    ? "bg-sky-50 text-sky-700 ring-sky-100"
                                                     : "bg-slate-100 text-slate-600 ring-slate-200"
                                             }`}
                                         >
@@ -166,7 +174,7 @@ export function StatCard({
                 <span
                     className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${toneClasses[accent]}`}
                 >
-                    Live
+                    En vivo
                 </span>
             </div>
             <p className="mt-3 text-sm leading-6 text-slate-600">{detail}</p>

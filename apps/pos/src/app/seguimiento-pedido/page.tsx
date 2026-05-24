@@ -1,4 +1,4 @@
-import { StatusPill } from "@coffeeflow/ui";
+import { StatusPill, ThemeToggle } from "@coffeeflow/ui";
 import { loadOrderTrackingSnapshot } from "../lib/order-tracking";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +20,7 @@ function StatCard({
     detail: string;
 }) {
     return (
-        <article className="rounded-4xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className="rounded-4xl border border-slate-200 bg-white p-5 shadow-sm hover:-translate-y-0.5">
             <p className="text-sm font-medium text-slate-500">{title}</p>
             <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
                 {value}
@@ -282,6 +282,7 @@ export default async function SeguimientoPedidoPage({
                                 Seguimiento público
                             </h1>
                         </div>
+                        <ThemeToggle />
                     </div>
                 </header>
 
