@@ -2,6 +2,7 @@ import Link from "next/link";
 import { loadOrderTrackingSnapshot } from "../lib/order-tracking";
 import { ThemeToggle } from "@coffeeflow/ui";
 import { MarkServedButton } from "./MarkServedButton";
+import OrdersRealtime from "./OrdersRealtime";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ export default async function MarcarEntregadoPage() {
     return (
         <main className="min-h-dvh bg-linear-to-br from-white via-slate-50 to-slate-100 px-4 py-6 text-slate-950 md:px-8 md:py-8">
             <section className="mx-auto max-w-6xl">
+                <OrdersRealtime />
                 <header className="rounded-4xl border border-slate-200/80 bg-white p-5 shadow-sm mb-6">
                     <div className="flex items-center justify-between">
                         <div>
@@ -68,7 +70,9 @@ export default async function MarcarEntregadoPage() {
                                         </div>
 
                                         <div className="ml-4">
-                                            <MarkServedButton orderId={ticket.id} />
+                                            <MarkServedButton
+                                                orderId={ticket.id}
+                                            />
                                         </div>
                                     </article>
                                 ))}

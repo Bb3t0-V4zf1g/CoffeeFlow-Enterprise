@@ -3,6 +3,7 @@ import {
     ensureDemoData,
 } from "@coffeeflow/database";
 import { StatusPill, ThemeToggle } from "@coffeeflow/ui";
+import OrdersRealtime from "./OrdersRealtime";
 import { updateOrderStatusAction } from "./actions";
 
 type OrderRow = {
@@ -113,6 +114,7 @@ export default async function Home() {
     return (
         <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.08),transparent_22%),radial-gradient(circle_at_top_right,rgba(16,185,129,0.06),transparent_18%),linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] px-4 py-6 text-slate-950 md:px-8 md:py-8">
             <section className="mx-auto flex max-w-7xl flex-col gap-6">
+                <OrdersRealtime />
                 <header className="rounded-4xl border border-slate-200/80 bg-white/90 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur md:p-6">
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                         <div className="space-y-3">
