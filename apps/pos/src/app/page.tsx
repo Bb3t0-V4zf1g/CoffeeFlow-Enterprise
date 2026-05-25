@@ -5,6 +5,7 @@ import {
 import { ThemeToggle } from "@coffeeflow/ui";
 import Link from "next/link";
 import { PosWorkbench } from "./pos-workbench";
+import OrdersRealtime from "./OrdersRealtime";
 
 type ProductRow = {
     id: string;
@@ -112,7 +113,10 @@ export default async function Home() {
     const counts = new Map<string, { name: string; qty: number }>();
     (todayItemsData ?? []).forEach((row: any) => {
         const pid: string = row.product_id;
-        const name: string = row.products?.name ?? products.find((p) => p.id === pid)?.name ?? "Desconocido";
+        const name: string =
+            row.products?.name ??
+            products.find((p) => p.id === pid)?.name ??
+            "Desconocido";
         const prev = counts.get(pid);
         counts.set(pid, { name, qty: (prev?.qty ?? 0) + (row.quantity ?? 0) });
     });
@@ -124,6 +128,7 @@ export default async function Home() {
     return (
         <main className="min-h-dvh bg-linear-to-br from-white via-slate-50 to-slate-100 px-4 py-6 text-slate-950 md:px-8 md:py-8">
             <section className="mx-auto flex max-w-7xl flex-col gap-6">
+                <OrdersRealtime />
                 <header className="rounded-4xl border border-slate-200/80 bg-white/90 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur md:p-6">
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                         <div className="space-y-3">
@@ -227,15 +232,26 @@ export default async function Home() {
                 </div>
 
                 <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <h2 className="text-sm font-medium text-slate-500">Top 5 del día</h2>
+                    <h2 className="text-sm font-medium text-slate-500">
+                        Top 5 del día
+                    </h2>
                     {top5.length === 0 ? (
-                        <p className="mt-2 text-sm text-slate-600">No hay pedidos hoy.</p>
+                        <p className="mt-2 text-sm text-slate-600">
+                            No hay pedidos hoy.
+                        </p>
                     ) : (
                         <ol className="mt-3 space-y-2 list-decimal list-inside">
                             {top5.map((p, idx) => (
-                                <li key={p.name} className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2">
-                                    <span className="font-medium text-slate-900">{p.name}</span>
-                                    <span className="text-sm text-slate-600">{p.qty} uds</span>
+                                <li
+                                    key={p.name}
+                                    className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2"
+                                >
+                                    <span className="font-medium text-slate-900">
+                                        {p.name}
+                                    </span>
+                                    <span className="text-sm text-slate-600">
+                                        {p.qty} uds
+                                    </span>
                                 </li>
                             ))}
                         </ol>

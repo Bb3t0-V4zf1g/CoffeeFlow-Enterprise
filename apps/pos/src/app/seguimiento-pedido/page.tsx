@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { StatusPill, ThemeToggle } from "@coffeeflow/ui";
 import { loadOrderTrackingSnapshot } from "../lib/order-tracking";
+import OrdersRealtime from "../OrdersRealtime";
 
 export const dynamic = "force-dynamic";
 
@@ -264,6 +265,7 @@ export default async function SeguimientoPedidoPage({
     return (
         <main className="min-h-dvh bg-linear-to-br from-white via-slate-50 to-slate-100 px-4 py-6 text-slate-950 md:px-8 md:py-8">
             <section className="mx-auto flex max-w-6xl flex-col gap-6">
+                <OrdersRealtime />
                 <header className="rounded-4xl border border-slate-200/80 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] md:p-6">
                     <div className="flex items-center justify-between">
                         <div>

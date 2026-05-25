@@ -25,6 +25,7 @@ import {
     updateProductPriceAction,
 } from "./actions";
 import { ThemeToggle } from "@coffeeflow/ui";
+import OrdersRealtime from "./OrdersRealtime";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,7 @@ export default async function Home() {
             description="Operación diaria, inventario y ventas en una sola vista."
             headerActions={<ThemeToggle />}
         >
+            <OrdersRealtime />
             <div className="grid gap-6 md:grid-cols-3">
                 <StatCard
                     title="Pedidos registrados"
