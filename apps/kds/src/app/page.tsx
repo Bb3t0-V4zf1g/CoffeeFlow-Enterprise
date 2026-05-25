@@ -57,7 +57,10 @@ const nextStatusByCurrent: Record<
 > = {
     pending: "in_progress",
     in_progress: "ready",
-    ready: "served",
+    // En KDS la columna 'Listo' no debe marcar el pedido como entregado.
+    // La cocina solo marca cuando el pedido pasa a 'ready'. La entrega
+    // la marca otro rol desde la pantalla de entrega.
+    ready: null,
     served: null,
     cancelled: null,
 };
