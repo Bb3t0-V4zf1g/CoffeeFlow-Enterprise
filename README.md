@@ -1,105 +1,112 @@
 # CoffeeFlow Enterprise
 
-Monorepo para una plataforma de cafetería con POS, pantalla de cocina (KDS) y panel de administración.
+**Nombre del proyecto:** CoffeeFlow Enterprise
 
-## Resumen
+**Descripción:** Monorepo para una plataforma de cafetería que incluye un Punto de Venta (POS), Pantalla de Cocina (KDS) y panel de administración. Está pensado como prototipo funcional para gestionar pedidos, cocina y administración de un local.
 
-CoffeeFlow es una plantilla de punto de venta (POS) pensada para cafeterías y locales pequeños. Incluye:
+**Materia / Profesor / Integrantes**
+- Materia: Interfaces de Usuario
+- Profesor: [Nombre del profesor]
+- Integrantes: [Nombre 1] (Alberto), [Nombre 2], [Nombre 3]
 
-- `apps/pos` — Interfaz de caja para tomar pedidos y generar tickets.
-- `apps/kds` — Pantalla de cocina/baristas para ver y marcar pedidos.
-- `apps/admin` — Backoffice: gestión de productos, inventario y reportes.
-- `packages/ui` — Componentes React/Tailwind reutilizables.
-- `packages/database` — Helpers para Supabase y datos de ejemplo (seeds).
+**Tecnologías y versiones**
+- Node.js >= 20
+- npm >= 10
+- Turborepo (turbo) ^2.9
+- Next.js 16.2.6
+- React 19.2.4
+- TypeScript ^5
+- TailwindCSS ^4
+- Supabase (como backend BaaS)
 
-## Requisitos
+## Instalación y ejecución (rápida)
 
-- Node.js 20+ (recomendado)
-- npm 10+
-- Una instancia de Supabase para la base de datos (opcional para desarrollo con datos reales)
-
-## Configuración inicial
-
-1. Instala dependencias:
+1. Instala dependencias en la raíz (usa workspaces):
 
 ```bash
 npm install
 ```
 
-2. Copia las variables de entorno y completa las credenciales:
+2. Prepara las variables de entorno locales (no comitear):
 
 ```bash
-cp .env.example .env.local
-# Edita .env.local con tu URL/KEY de Supabase si corresponde
+npm run env:setup
+# Edita .env.local y pega tus credenciales reales (SUPABASE URL/KEYs)
 ```
 
-3. (Opcional) Si usas Supabase, aplica el esquema o crea la base usando `packages/database/schema.sql`.
-
-## Arranque en desarrollo
-
-Ejecuta el monorepo en modo desarrollo (Turborepo/Turbo):
+3. Inicia el entorno de desarrollo:
 
 ```bash
 npm run dev
 ```
 
-Apps locales y puertos comunes (pueden variar):
+Páginas por defecto (puertos que usa el proyecto en desarrollo):
+- KDS: http://localhost:3000
+- Admin: http://localhost:3001
+- POS: http://localhost:3002
 
-- `http://localhost:3000` — KDS
-- `http://localhost:3001` — Admin
-- `http://localhost:3002` — POS
+## Despliegue / Prototipo funcional
 
-Si alguno de los puertos está en uso, Turbo reasigna puertos automáticamente; revisa la salida de `npm run dev`.
+- Enlace al prototipo funcional: [Agregar URL del prototipo aquí]
 
-## Seeds / Datos demo
+### Despliegue en Vercel para las 3 apps
 
-Para cargar datos de demostración (categorías, productos, recetas) revisa `packages/database/src/seed.ts` y usa la utilidad `ensureDemoData` si está expuesta en tu entorno. En desarrollo local normalmente los datos demo se aplican automáticamente al iniciar.
+Para desplegar cada aplicación por separado en Vercel, crea un proyecto distinto para cada una y configura la carpeta raíz de la app.
+
+1. Conecta el repositorio a Vercel.
+2. Crea un nuevo proyecto en Vercel para cada app:
+   - `apps/admin` → Admin
+   - `apps/kds` → KDS
+   - `apps/pos` → POS
+3. En la configuración del proyecto, asegura estos valores:
+   - Root Directory: `apps/admin`, `apps/kds` o `apps/pos`
+   - Framework Preset: `Next.js`
+   - Build Command: `npm run build`
+   - Install Command: deja el valor predeterminado (`npm install`) o, si Vercel no instala correctamente los workspaces, usa `npm install --workspaces`
+   - Output Directory: deja la opción predeterminada en blanco para Next.js.
+4. Agrega las variables de entorno en Vercel para cada proyecto:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+5. Despliega y usa las URLs generadas por Vercel para cada app.
+
+> Cada app comparte el monorepo, pero debe desplegarse como proyecto independiente en Vercel apuntando a su carpeta `apps/*`.
+
+Si quieres un prototipo público, copia en esta sección la URL de despliegue que te da Vercel para la app principal (por ejemplo `https://admin-tu-proyecto.vercel.app`).
+
+## Funcionalidades implementadas (resumen)
+- Interfaz POS para tomar pedidos y emitir tickets.
+- Pantalla KDS para visualizar y marcar el estado de platillos.
+- Panel administrativo para gestión de productos y datos.
+- Componentes reutilizables en `packages/ui`.
+- Conexión a Supabase para persistencia y seeds de ejemplo en `packages/database`.
+
+## Seguridad y manejo de credenciales
+
+- Este repositorio incluye un archivo `.env.example` con variables de ejemplo (sin credenciales reales).
+- Nunca subas archivos con valores reales de credenciales. Usa `npm run env:setup` para crear `.env.local` a partir del ejemplo y completa tus secretos localmente.
+- `.gitignore` ya excluye `.env`, `.env.local` y variantes.
+
+## Declaración de uso de inteligencia artificial
+
+- Este proyecto utilizó asistencia de inteligencia artificial (herramientas de autocompletado y generación de código) para acelerar tareas de desarrollo y escritura de documentación. Todos los cambios fueron revisados manualmente por el equipo.
 
 ## Comandos útiles
 
-- Levantar dev: `npm run dev`
-- Build: `npm run build`
-- Lint: `npm run lint`
-- Tests (si están configurados): `npm test` o `npm run test`
-
-## Flujo de trabajo rápido
-
-1. Modifica componentes en `packages/ui` para cambios compartidos.
-2. Ajusta lógica en `packages/database` para queries y seeds.
-3. Prueba la UI en `apps/pos` y `apps/kds` ejecutando `npm run dev`.
-
-## Notas y resolución de problemas
-
-- Hidratación React: si ves errores tipo "A tree hydrated but some attributes...", revisa diferencias entre server/client (por ejemplo, atributos de `form` como `method` deben coincidir exactamente con mayúsculas). Evita usar valores que cambian entre servidor/cliente (p. ej. `Date.now()` o `Math.random()`) en renderizado inicial.
-- Puertos en uso: Turbo puede reasignar puertos; revisa la consola para conocer las URLs reales.
-
-## Contribuir
-
-1. Crea una rama con nombre descriptivo `feat/mi-cambio`.
-2. Asegura que `lint` pasa y los cambios son mínimos.
-3. Abre un PR describiendo el propósito y pasos para validar.
+- `npm run env:setup` — Crea `.env.local` a partir de `.env.example` (si no existe)
+- `npm install` — Instala dependencias
+- `npm run dev` — Levanta el monorepo en modo desarrollo
+- `npm run build` — Construye los paquetes
+- `npm run lint` — Ejecuta linters
 
 ## Recursos y archivos importantes
 
 - Esquema de DB: `packages/database/schema.sql`
 - Seeds demo: `packages/database/src/seed.ts`
-- Punto de entrada POS: `apps/pos/src/app/pos-workbench.tsx`
-- Seguimiento de pedidos (público): `apps/pos/src/app/seguimiento-pedido/page.tsx`
-- Acción para marcar entregado: `apps/pos/src/app/actions.ts`
-
-**Rutas y Endpoints (local)**
-
-- **KDS (pantalla cocina)**: http://localhost:3000/ — app: `apps/kds`
-- **Admin (backoffice)**: http://localhost:3001/ — app: `apps/admin`
-- **POS (caja)**: http://localhost:3002/ — app: `apps/pos`
-- **POS — Seguimiento público**: http://localhost:3002/seguimiento-pedido — página pública para que clientes consulten su ticket (`apps/pos/src/app/seguimiento-pedido/page.tsx`)
-- **POS — Marcar entregado**: http://localhost:3002/marcar-entregado — acción y UI para marcar pedidos como entregados (`apps/pos/src/app/marcar-entregado/page.tsx`)
-- **API (ejemplos)**: revisa `apps/*/src/app/api` para endpoints; ejemplo usado en desarrollo: `/api/estado-platillos` (revalida/consulta estado de platillos)
-
-Nota: los puertos son los más comunes en este proyecto, pero `turbo dev` puede reasignarlos si alguno ya está en uso — revisa la consola para las URLs exactas.
-
-Nota histórica: originalmente `apps/admin`, `apps/kds` y `apps/pos` estaban configuradas como submódulos. Ahora todos los contenidos de `apps/*` están incluidos directamente en este repositorio, por lo que al clonar o descargar desde GitHub las carpetas contendrán sus archivos sin necesidad de inicializar submódulos.
+- Punto de entrada POS: [apps/pos/src/app/pos-workbench.tsx](apps/pos/src/app/pos-workbench.tsx#L1)
+- Seguimiento de pedidos (público): [apps/pos/src/app/seguimiento-pedido/page.tsx](apps/pos/src/app/seguimiento-pedido/page.tsx#L1)
+- Acción para marcar entregado: [apps/pos/src/app/actions.ts](apps/pos/src/app/actions.ts#L1)
 
 ---
 
-¿Quieres que añada una sección específica para despliegue (Vercel/Netlify) o ejemplos de llamadas a la API de Supabase?
+Si quieres, puedo añadir ejemplos de despliegue (Vercel) o rellenar los campos de integrantes y profesor con los datos reales. ¿Los completo yo o prefieres hacerlo tú?
