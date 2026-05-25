@@ -6,6 +6,8 @@ import { StatusPill, ThemeToggle } from "@coffeeflow/ui";
 import OrdersRealtime from "./OrdersRealtime";
 import { updateOrderStatusAction } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 type OrderRow = {
     id: string;
     status: "pending" | "in_progress" | "ready" | "served" | "cancelled";

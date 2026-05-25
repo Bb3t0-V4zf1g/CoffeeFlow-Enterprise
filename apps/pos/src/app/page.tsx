@@ -7,6 +7,8 @@ import Link from "next/link";
 import { PosWorkbench } from "./pos-workbench";
 import OrdersRealtime from "./OrdersRealtime";
 
+export const dynamic = "force-dynamic";
+
 type ProductRow = {
     id: string;
     name: string;
