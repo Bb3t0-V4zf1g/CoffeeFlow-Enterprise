@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "CoffeeFlow Admin",
+    title: "CoffeeFlow Admin | Operación",
     description:
-        "Panel de control, inventario, menú y estados en vivo de la cafetería.",
+        "Resumen operativo, menú, inventario y acciones administrativas en vivo.",
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="es" className="h-full antialiased">
-            <body className="min-h-full bg-white text-slate-950">
+            <body className="min-h-full bg-slate-50 text-slate-950">
                 {children}
             </body>
         </html>

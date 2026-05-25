@@ -27,6 +27,7 @@ export async function createProductAction(formData: FormData) {
     }
 
     revalidatePath("/");
+    revalidatePath("/estado-platillos");
 }
 
 export async function createCategoryAction(formData: FormData) {
@@ -44,6 +45,7 @@ export async function createCategoryAction(formData: FormData) {
     }
 
     revalidatePath("/");
+    revalidatePath("/estado-platillos");
 }
 
 export async function updateCategoryAction(formData: FormData) {
@@ -65,6 +67,7 @@ export async function updateCategoryAction(formData: FormData) {
     }
 
     revalidatePath("/");
+    revalidatePath("/estado-platillos");
 }
 
 export async function deleteCategoryAction(formData: FormData) {
@@ -85,6 +88,7 @@ export async function deleteCategoryAction(formData: FormData) {
     }
 
     revalidatePath("/");
+    revalidatePath("/estado-platillos");
 }
 
 export async function updateProductPriceAction(formData: FormData) {

@@ -20,8 +20,13 @@ type AdminShellProps = {
 const navItems: NavItem[] = [
     {
         href: "/",
-        label: "Dashboard",
-        description: "Ventas, menú e inventario",
+        label: "Resumen",
+        description: "Ventas de hoy y alertas",
+    },
+    {
+        href: "/estado-platillos",
+        label: "Menú e inventario",
+        description: "Precios, categorías y stock",
     },
 ];
 

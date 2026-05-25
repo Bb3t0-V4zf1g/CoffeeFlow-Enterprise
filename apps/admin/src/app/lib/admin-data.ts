@@ -62,6 +62,28 @@ export type DishStatusRow = {
     progressPercent: number;
 };
 
+export type OrderStatusSummaryRow = {
+    status: OrderRow["status"];
+    label: string;
+    count: number;
+    tone: DishStatusTone;
+};
+
+export type ProductSalesRow = {
+    id: string;
+    name: string;
+    category: string;
+    quantity: number;
+    revenueCents: number;
+    revenueText: string;
+    orders: number;
+};
+
+export type RecentOrderRow = OrderRow & {
+    itemCount: number;
+    summary: string;
+};
+
 export type PreparationTicketItem = {
     productId: string;
     name: string;
@@ -170,6 +192,145 @@ export function formatMoneyMXN(amountCents: number) {
         style: "currency",
         currency: "MXN",
     }).format(amountCents / 100);
+}
+
+export function isSameLocalDay(
+    isoDate: string,
+    referenceDate = new Date(),
+) {
+    const date = new Date(isoDate);
+
+    return (
+        date.getFullYear() === referenceDate.getFullYear() &&
+        date.getMonth() === referenceDate.getMonth() &&
+        date.getDate() === referenceDate.getDate()
+    );
+}
+
+export function buildOrderStatusSummary(
+    snapshot: AdminSnapshot,
+    referenceDate = new Date(),
+): OrderStatusSummaryRow[] {
+    const todayOrders = snapshot.orders.filter((order) =>
+        isSameLocalDay(order.created_at, referenceDate),
+    );
+    const statuses = [
+        "pending",
+        "in_progress",
+        "ready",
+        "served",
+        "cancelled",
+    ] as const;
+
+    const labels: Record<OrderRow["status"], string> = {
+        pending: "Pendientes",
+        in_progress: "En preparación",
+        ready: "Listos",
+        served: "Entregados",
+        cancelled: "Cancelados",
+    };
+
+    const tones: Record<OrderRow["status"], DishStatusTone> = {
+        pending: "amber",
+        in_progress: "sky",
+        ready: "emerald",
+        served: "emerald",
+        cancelled: "rose",
+    };
+
+    return statuses.map((status) => ({
+            status,
+            label: labels[status],
+            count: todayOrders.filter((order) => order.status === status).length,
+            tone: tones[status],
+        }));
+}
+
+export function buildTopProductsToday(
+    snapshot: AdminSnapshot,
+    limit = 5,
+    referenceDate = new Date(),
+): ProductSalesRow[] {
+    const orderById = new Map(
+        snapshot.orders.map((order) => [order.id, order]),
+    );
+    const productById = new Map(
+        snapshot.products.map((product) => [product.id, product]),
+    );
+    const categoryById = buildCategoryMap(snapshot.categories);
+    const aggregate = new Map<
+        string,
+        { quantity: number; revenueCents: number; orderIds: Set<string> }
+    >();
+
+    for (const item of snapshot.orderItems) {
+        const order = orderById.get(item.order_id);
+
+        if (!order || !isSameLocalDay(order.created_at, referenceDate)) {
+            continue;
+        }
+
+        const current = aggregate.get(item.product_id) ?? {
+            quantity: 0,
+            revenueCents: 0,
+            orderIds: new Set<string>(),
+        };
+
+        current.quantity += item.quantity;
+        current.revenueCents += item.line_total_cents;
+        current.orderIds.add(item.order_id);
+        aggregate.set(item.product_id, current);
+    }
+
+    return [...aggregate.entries()]
+        .map(([productId, data]) => {
+            const product = productById.get(productId);
+
+            return {
+                id: productId,
+                name: product?.name ?? "Producto",
+                category:
+                    categoryById.get(product?.category_id ?? "") ??
+                    "Sin categoría",
+                quantity: data.quantity,
+                revenueCents: data.revenueCents,
+                revenueText: formatMoneyMXN(data.revenueCents),
+                orders: data.orderIds.size,
+            };
+        })
+        .sort((left, right) => {
+            if (right.quantity !== left.quantity) {
+                return right.quantity - left.quantity;
+            }
+
+            return right.revenueCents - left.revenueCents;
+        })
+        .slice(0, limit);
+}
+
+export function buildRecentOrders(
+    snapshot: AdminSnapshot,
+    limit = 6,
+): RecentOrderRow[] {
+    const productNameMap = buildProductNameMap(snapshot.products);
+
+    return snapshot.orders.slice(0, limit).map((order) => {
+        const items = snapshot.orderItems.filter(
+            (item) => item.order_id === order.id,
+        );
+
+        return {
+            ...order,
+            itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+            summary: items
+                .slice(0, 3)
+                .map(
+                    (item) =>
+                        `${item.quantity}× ${productNameMap.get(item.product_id) ?? "Producto"}`,
+                )
+                .join(", "),
+        };
+    });
 }
 
 export function buildDishStatuses(snapshot: AdminSnapshot): DishStatusRow[] {
