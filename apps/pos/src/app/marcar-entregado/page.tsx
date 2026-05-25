@@ -40,16 +40,56 @@ export default async function MarcarEntregadoPage() {
                 </header>
 
                 <div className="space-y-4">
+                    {/* Listos */}
                     <section className="space-y-4">
-                        <h2 className="text-lg font-semibold">
-                            En preparación
-                        </h2>
+                        <h2 className="text-lg font-semibold">Listos</h2>
+                        {(
+                            snapshot.readyTickets ?? []
+                        ).length === 0 ? (
+                            <article className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
+                                No hay pedidos listos.
+                            </article>
+                        ) : (
+                            <div className="mt-2 max-h-[50vh] overflow-y-auto space-y-4 pr-2">
+                                {(snapshot.readyTickets ?? []).map((ticket) => (
+                                    <article
+                                        key={ticket.id}
+                                        className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm flex items-center justify-between hover:-translate-y-0.5"
+                                    >
+                                        <div>
+                                            <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
+                                                Ticket {ticket.id.slice(0, 8)}
+                                            </p>
+                                            <p className="mt-1 text-sm text-slate-700">
+                                                {ticket.items
+                                                    .map(
+                                                        (i) =>
+                                                            `${i.name} x${i.quantity}`,
+                                                    )
+                                                    .join(", ")}
+                                            </p>
+                                        </div>
+
+                                        <div className="ml-4">
+                                            <MarkServedButton
+                                                orderId={ticket.id}
+                                            />
+                                        </div>
+                                    </article>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+
+                    {/* En preparación */}
+                    <section className="space-y-4">
+                        <h2 className="text-lg font-semibold">En preparación</h2>
                         {snapshot.tickets.length === 0 ? (
                             <article className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
                                 No hay pedidos en preparación.
                             </article>
                         ) : (
-                            <div className="mt-2 max-h-[60vh] overflow-y-auto space-y-4 pr-2">
+                            <div className="mt-2 max-h-[40vh] overflow-y-auto space-y-4 pr-2">
                                 {snapshot.tickets.map((ticket) => (
                                     <article
                                         key={ticket.id}
