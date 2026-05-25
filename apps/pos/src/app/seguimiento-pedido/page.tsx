@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { StatusPill, ThemeToggle } from "@coffeeflow/ui";
 import { loadOrderTrackingSnapshot } from "../lib/order-tracking";
 
@@ -40,12 +41,7 @@ export default async function SeguimientoPedidoPage({
     const snapshot = await loadOrderTrackingSnapshot(query);
 
     const totalTickets = snapshot.tickets.length;
-    const totalItems = snapshot.tickets.reduce(
-        (accumulator, ticket) => accumulator + ticket.items.length,
-        0,
-    );
 
-    // Agregados: contar platillos listos y en curso
     const readyItemsMap = new Map<string, number>();
     (snapshot.readyTickets ?? []).forEach((t) =>
         t.items.forEach((i) =>
@@ -55,23 +51,11 @@ export default async function SeguimientoPedidoPage({
             ),
         ),
     );
-    const inProgressItemsMap = new Map<string, number>();
-    snapshot.tickets.forEach((t) =>
-        t.items.forEach((i) =>
-            inProgressItemsMap.set(
-                i.name,
-                (inProgressItemsMap.get(i.name) ?? 0) + i.quantity,
-            ),
-        ),
-    );
 
     const readyEntries = Array.from(readyItemsMap.entries())
         .map(([name, qty]) => ({ name, qty }))
         .sort((a, b) => b.qty - a.qty);
     const totalReadyQty = readyEntries.reduce((s, it) => s + it.qty, 0);
-    const inProgressEntries = Array.from(inProgressItemsMap.entries())
-        .map(([name, qty]) => ({ name, qty }))
-        .sort((a, b) => b.qty - a.qty);
 
     const resultContent = (() => {
         if (snapshot.query) {
@@ -164,102 +148,110 @@ export default async function SeguimientoPedidoPage({
                             No hay pedidos en preparación.
                         </p>
                     ) : (
-                        snapshot.tickets.map((ticket) => (
-                            <article
-                                key={ticket.id}
-                                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
-                            >
-                                <div className="flex flex-wrap items-center justify-between gap-3">
-                                    <div>
-                                        <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
-                                            Ticket {ticket.id.slice(0, 8)}
-                                        </p>
-                                        <h3 className="mt-1 text-2xl font-semibold text-slate-950">
-                                            {ticket.statusLabel}
-                                        </h3>
-                                    </div>
-                                    <div className="text-right">
-                                        <StatusPill
-                                            tone="amber"
-                                            label="En preparación"
-                                        />
-                                        <p className="mt-2 text-sm font-semibold text-slate-950">
-                                            {ticket.totalText}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                                    {ticket.items.map((item) => (
-                                        <div
-                                            key={`${ticket.id}-${item.productId}`}
-                                            className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
-                                        >
-                                            <p className="font-medium text-slate-950">
-                                                {item.name}
+                        <div className="mt-2 max-h-[60vh] overflow-y-auto space-y-4 pr-2">
+                            {snapshot.tickets.map((ticket) => (
+                                <article
+                                    key={ticket.id}
+                                    className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+                                >
+                                    <div className="flex flex-wrap items-center justify-between gap-3">
+                                        <div>
+                                            <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
+                                                Ticket {ticket.id.slice(0, 8)}
                                             </p>
-                                            <p className="text-sm text-slate-600">
-                                                {item.quantity} x{" "}
-                                                {item.lineTotalText}
+                                            <h3 className="mt-1 text-2xl font-semibold text-slate-950">
+                                                {ticket.statusLabel}
+                                            </h3>
+                                        </div>
+                                        <div className="text-right">
+                                            <StatusPill
+                                                tone="amber"
+                                                label="En preparación"
+                                            />
+                                            <p className="mt-2 text-sm font-semibold text-slate-950">
+                                                {ticket.totalText}
                                             </p>
                                         </div>
-                                    ))}
-                                </div>
-                            </article>
-                        ))
+                                    </div>
+
+                                    <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                                        {ticket.items.map((item) => (
+                                            <div
+                                                key={`${ticket.id}-${item.productId}`}
+                                                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                                            >
+                                                <p className="font-medium text-slate-950">
+                                                    {item.name}
+                                                </p>
+                                                <p className="text-sm text-slate-600">
+                                                    {item.quantity} x{" "}
+                                                    {item.lineTotalText}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
                     )}
                 </div>
 
                 <div className="space-y-4">
                     <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                         <h3 className="text-lg font-semibold">
-                            Platillos listos
+                            Tickets listos
                         </h3>
-                        {readyEntries.length === 0 ? (
+                        {(snapshot.readyTickets ?? []).length === 0 ? (
                             <p className="mt-3 text-sm text-slate-600">
-                                No hay platillos listos recientemente.
+                                No hay tickets listos recientemente.
                             </p>
                         ) : (
-                            <div className="mt-3 grid gap-2">
-                                {readyEntries.slice(0, 20).map((it) => (
-                                    <div
-                                        key={it.name}
-                                        className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                            <div className="mt-3 max-h-[60vh] overflow-y-auto space-y-3 pr-2">
+                                {(snapshot.readyTickets ?? []).map((ticket) => (
+                                    <article
+                                        key={ticket.id}
+                                        className="rounded-3xl border border-slate-200 bg-slate-50 p-4"
                                     >
-                                        <p className="font-medium text-slate-950">
-                                            {it.name}
-                                        </p>
-                                        <p className="text-sm text-slate-600">
-                                            {it.qty} x
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
+                                                    Ticket{" "}
+                                                    {ticket.id.slice(0, 8)}
+                                                </p>
+                                                <p className="mt-1 text-sm text-slate-600">
+                                                    Recibido a las{" "}
+                                                    {formatTime(
+                                                        ticket.createdAt,
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <StatusPill
+                                                    tone="emerald"
+                                                    label="Listo"
+                                                />
+                                                <p className="mt-2 text-sm font-semibold text-slate-950">
+                                                    {ticket.totalText}
+                                                </p>
+                                            </div>
+                                        </div>
 
-                    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <h3 className="text-lg font-semibold">
-                            Platillos en curso
-                        </h3>
-                        {inProgressEntries.length === 0 ? (
-                            <p className="mt-3 text-sm text-slate-600">
-                                No hay platillos en curso.
-                            </p>
-                        ) : (
-                            <div className="mt-3 grid gap-2">
-                                {inProgressEntries.slice(0, 20).map((it) => (
-                                    <div
-                                        key={it.name}
-                                        className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
-                                    >
-                                        <p className="font-medium text-slate-950">
-                                            {it.name}
-                                        </p>
-                                        <p className="text-sm text-slate-600">
-                                            {it.qty} x
-                                        </p>
-                                    </div>
+                                        <div className="mt-3 grid gap-2 md:grid-cols-1">
+                                            {ticket.items.map((item) => (
+                                                <div
+                                                    key={`${ticket.id}-${item.productId}`}
+                                                    className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3"
+                                                >
+                                                    <p className="font-medium text-slate-950">
+                                                        {item.name}
+                                                    </p>
+                                                    <p className="text-sm text-slate-600">
+                                                        {item.quantity} x
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </article>
                                 ))}
                             </div>
                         )}
@@ -282,7 +274,15 @@ export default async function SeguimientoPedidoPage({
                                 Seguimiento público
                             </h1>
                         </div>
-                        <ThemeToggle />
+                        <div className="flex items-center gap-3">
+                            <Link
+                                href="/"
+                                className="inline-flex items-center gap-2 rounded-md bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                            >
+                                ← Volver al POS
+                            </Link>
+                            <ThemeToggle />
+                        </div>
                     </div>
                 </header>
 
@@ -306,9 +306,7 @@ export default async function SeguimientoPedidoPage({
 
                 <section className="rounded-4xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
                     <div className="mb-4">
-                        <h2 className="text-xl font-semibold text-slate-950">
-                            Resultado
-                        </h2>
+                        <h2 className="text-xl font-semibold">Resultado</h2>
                         <p className="text-sm leading-6 text-slate-600">
                             {snapshot.query
                                 ? `Búsqueda para ticket ${snapshot.query}`

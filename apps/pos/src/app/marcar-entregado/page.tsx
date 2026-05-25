@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { markOrderServed } from "../actions";
 import { loadOrderTrackingSnapshot } from "../lib/order-tracking";
 import { Button, ThemeToggle } from "@coffeeflow/ui";
@@ -24,53 +25,71 @@ export default async function MarcarEntregadoPage() {
                                 retirarlo de la lista de preparación.
                             </p>
                         </div>
-                        <ThemeToggle />
+                        <div className="flex items-center gap-3">
+                            <Link
+                                href="/"
+                                className="inline-flex items-center gap-2 rounded-md bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+                            >
+                                ← Volver al POS
+                            </Link>
+                            <ThemeToggle />
+                        </div>
                     </div>
                 </header>
 
-                <section className="space-y-4">
-                    {snapshot.tickets.length === 0 ? (
-                        <article className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
-                            No hay pedidos en preparación.
-                        </article>
-                    ) : (
-                        snapshot.tickets.map((ticket) => (
-                            <article
-                                key={ticket.id}
-                                className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm flex items-center justify-between hover:-translate-y-0.5"
-                            >
-                                <div>
-                                    <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
-                                        Ticket {ticket.id.slice(0, 8)}
-                                    </p>
-                                    <p className="mt-1 text-sm text-slate-700">
-                                        {ticket.items
-                                            .map(
-                                                (i) =>
-                                                    `${i.name} x${i.quantity}`,
-                                            )
-                                            .join(", ")}
-                                    </p>
-                                </div>
-
-                                <form action={markOrderServed} className="ml-4">
-                                    <input
-                                        type="hidden"
-                                        name="orderId"
-                                        value={ticket.id}
-                                    />
-                                    <Button
-                                        type="submit"
-                                        variant="primary"
-                                        className="inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-400/60 disabled:cursor-not-allowed disabled:opacity-50 bg-slate-950 text-white hover:bg-slate-800"
-                                    >
-                                        Marcar entregado
-                                    </Button>
-                                </form>
+                <div className="space-y-4">
+                    <section className="space-y-4">
+                        <h2 className="text-lg font-semibold">
+                            En preparación
+                        </h2>
+                        {snapshot.tickets.length === 0 ? (
+                            <article className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
+                                No hay pedidos en preparación.
                             </article>
-                        ))
-                    )}
-                </section>
+                        ) : (
+                            <div className="mt-2 max-h-[60vh] overflow-y-auto space-y-4 pr-2">
+                                {snapshot.tickets.map((ticket) => (
+                                    <article
+                                        key={ticket.id}
+                                        className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm flex items-center justify-between hover:-translate-y-0.5"
+                                    >
+                                        <div>
+                                            <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
+                                                Ticket {ticket.id.slice(0, 8)}
+                                            </p>
+                                            <p className="mt-1 text-sm text-slate-700">
+                                                {ticket.items
+                                                    .map(
+                                                        (i) =>
+                                                            `${i.name} x${i.quantity}`,
+                                                    )
+                                                    .join(", ")}
+                                            </p>
+                                        </div>
+
+                                        <form
+                                            action={markOrderServed}
+                                            className="ml-4"
+                                        >
+                                            <input
+                                                type="hidden"
+                                                name="orderId"
+                                                value={ticket.id}
+                                            />
+                                            <Button
+                                                type="submit"
+                                                variant="primary"
+                                                className="inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-400/60 disabled:cursor-not-allowed disabled:opacity-50 bg-slate-950 text-white hover:bg-slate-800"
+                                            >
+                                                Marcar entregado
+                                            </Button>
+                                        </form>
+                                    </article>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+                </div>
             </section>
         </main>
     );
