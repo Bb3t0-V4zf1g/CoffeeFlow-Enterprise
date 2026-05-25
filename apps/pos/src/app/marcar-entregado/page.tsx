@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { markOrderServed } from "../actions";
 import { loadOrderTrackingSnapshot } from "../lib/order-tracking";
-import { Button, ThemeToggle } from "@coffeeflow/ui";
+import { ThemeToggle } from "@coffeeflow/ui";
+import { MarkServedButton } from "./MarkServedButton";
 
 export const dynamic = "force-dynamic";
 
@@ -67,23 +67,9 @@ export default async function MarcarEntregadoPage() {
                                             </p>
                                         </div>
 
-                                        <form
-                                            action={markOrderServed}
-                                            className="ml-4"
-                                        >
-                                            <input
-                                                type="hidden"
-                                                name="orderId"
-                                                value={ticket.id}
-                                            />
-                                            <Button
-                                                type="submit"
-                                                variant="primary"
-                                                className="inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-400/60 disabled:cursor-not-allowed disabled:opacity-50 bg-slate-950 text-white hover:bg-slate-800"
-                                            >
-                                                Marcar entregado
-                                            </Button>
-                                        </form>
+                                        <div className="ml-4">
+                                            <MarkServedButton orderId={ticket.id} />
+                                        </div>
                                     </article>
                                 ))}
                             </div>
