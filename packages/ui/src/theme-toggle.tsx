@@ -51,7 +51,7 @@ export function ThemeToggle({
                 applyTheme(next);
                 window.localStorage.setItem(STORAGE_KEY, next);
             }}
-            className={`theme-toggle-button inline-flex min-h-10 items-center gap-2 rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-100 ${className}`}
+            className={`theme-toggle-button inline-flex min-h-10 items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold shadow-sm transition-transform transform-gpu will-change-transform hover:-translate-y-0.5 ${isDark ? "border-slate-700 bg-slate-800 text-slate-200" : "border-slate-300 bg-white text-slate-700"} ${className}`}
             aria-label={label}
             title={label}
         >

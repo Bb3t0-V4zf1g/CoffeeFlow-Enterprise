@@ -18,7 +18,7 @@ export function StatusPill({ label, tone = "emerald" }: StatusPillProps) {
     return (
         <span
             className={mergeClasses(
-                "inline-flex rounded-full px-3 py-1 text-xs font-medium",
+                "inline-flex rounded-full px-3 py-1 text-xs font-medium transition-colors duration-150",
                 toneClasses[tone],
             )}
         >

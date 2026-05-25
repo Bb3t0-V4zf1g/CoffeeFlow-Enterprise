@@ -100,6 +100,27 @@ export default async function Home() {
         (order) => order.status === "in_progress",
     ).length;
 
+    // Top 5 productos del día (por cantidad)
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const { data: todayItemsData } = await client
+        .from("order_items")
+        .select("product_id, quantity, products(name)")
+        .gte("created_at", startOfDay.toISOString());
+
+    const counts = new Map<string, { name: string; qty: number }>();
+    (todayItemsData ?? []).forEach((row: any) => {
+        const pid: string = row.product_id;
+        const name: string = row.products?.name ?? products.find((p) => p.id === pid)?.name ?? "Desconocido";
+        const prev = counts.get(pid);
+        counts.set(pid, { name, qty: (prev?.qty ?? 0) + (row.quantity ?? 0) });
+    });
+
+    const top5 = Array.from(counts.values())
+        .sort((a, b) => b.qty - a.qty)
+        .slice(0, 5);
+
     return (
         <main className="min-h-dvh bg-linear-to-br from-white via-slate-50 to-slate-100 px-4 py-6 text-slate-950 md:px-8 md:py-8">
             <section className="mx-auto flex max-w-7xl flex-col gap-6">
@@ -204,6 +225,22 @@ export default async function Home() {
                         </article>
                     ))}
                 </div>
+
+                <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <h2 className="text-sm font-medium text-slate-500">Top 5 del día</h2>
+                    {top5.length === 0 ? (
+                        <p className="mt-2 text-sm text-slate-600">No hay pedidos hoy.</p>
+                    ) : (
+                        <ol className="mt-3 space-y-2 list-decimal list-inside">
+                            {top5.map((p, idx) => (
+                                <li key={p.name} className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2">
+                                    <span className="font-medium text-slate-900">{p.name}</span>
+                                    <span className="text-sm text-slate-600">{p.qty} uds</span>
+                                </li>
+                            ))}
+                        </ol>
+                    )}
+                </section>
 
                 <PosWorkbench
                     products={products}

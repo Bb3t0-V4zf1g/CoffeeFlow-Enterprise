@@ -19,7 +19,7 @@ export function MetricCard({
     return (
         <article
             className={mergeClasses(
-                "rounded-3xl border border-white/10 bg-white/5 p-5 shadow-lg shadow-black/10",
+                "rounded-3xl border border-white/10 bg-white/5 p-5 shadow-lg shadow-black/10 transition-transform hover:-translate-y-0.5 hover:shadow-xl",
                 className,
             )}
         >
