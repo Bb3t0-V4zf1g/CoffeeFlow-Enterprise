@@ -17,7 +17,10 @@ export default function OrdersRealtime() {
                 { event: "*", schema: "public", table: "orders" },
                 (payload) => {
                     // eslint-disable-next-line no-console
-                    console.debug("MarcarEntregado OrdersRealtime event:", payload);
+                    console.debug(
+                        "MarcarEntregado OrdersRealtime event:",
+                        payload,
+                    );
                     router.refresh();
                 },
             )

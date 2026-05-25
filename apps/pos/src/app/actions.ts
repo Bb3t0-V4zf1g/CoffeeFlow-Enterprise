@@ -100,7 +100,11 @@ export async function markOrderServed(input: { orderId: string }) {
     const client = createSupabaseServiceClient();
     // Validar formato UUID básico para evitar errores 22P02 en Postgres
     const uuidRegex = /^[0-9a-fA-F-]{8,36}$/;
-    if (!input || typeof input.orderId !== "string" || !uuidRegex.test(input.orderId)) {
+    if (
+        !input ||
+        typeof input.orderId !== "string" ||
+        !uuidRegex.test(input.orderId)
+    ) {
         return {
             success: false,
             message: "ID de pedido inválido. Operación cancelada.",
