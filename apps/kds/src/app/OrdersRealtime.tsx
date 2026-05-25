@@ -15,14 +15,22 @@ export default function OrdersRealtime() {
             .on(
                 "postgres_changes",
                 { event: "*", schema: "public", table: "orders" },
-                () => {
-                    // refresh the page data when orders change
+                (payload) => {
+                    // debug log and refresh the page data when orders change
+                    // eslint-disable-next-line no-console
+                    console.debug("OrdersRealtime event:", payload);
                     router.refresh();
                 },
             )
             .subscribe();
 
+        // Fallback polling: refresh every 3s to guarantee updates if realtime misses events
+        const interval = setInterval(() => {
+            router.refresh();
+        }, 3000);
+
         return () => {
+            clearInterval(interval);
             supabase.removeChannel(subscription);
         };
     }, [router]);

@@ -15,13 +15,20 @@ export default function OrdersRealtime() {
             .on(
                 "postgres_changes",
                 { event: "*", schema: "public", table: "orders" },
-                () => {
+                (payload) => {
+                    // eslint-disable-next-line no-console
+                    console.debug("MarcarEntregado OrdersRealtime event:", payload);
                     router.refresh();
                 },
             )
             .subscribe();
 
+        const interval = setInterval(() => {
+            router.refresh();
+        }, 3000);
+
         return () => {
+            clearInterval(interval);
             supabase.removeChannel(subscription);
         };
     }, [router]);
