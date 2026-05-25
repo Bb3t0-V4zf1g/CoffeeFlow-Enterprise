@@ -98,20 +98,38 @@ export async function placeOrderAction(input: {
 
 export async function markOrderServed(input: { orderId: string }) {
     const client = createSupabaseServiceClient();
-
-    const { error } = await client
-        .from("orders")
-        .update({ status: "served" })
-        .eq("id", input.orderId);
-
-    if (error) {
-        throw error;
+    // Validar formato UUID básico para evitar errores 22P02 en Postgres
+    const uuidRegex = /^[0-9a-fA-F-]{8,36}$/;
+    if (!input || typeof input.orderId !== "string" || !uuidRegex.test(input.orderId)) {
+        return {
+            success: false,
+            message: "ID de pedido inválido. Operación cancelada.",
+        };
     }
 
-    revalidatePath("/seguimiento-pedido");
+    try {
+        const { error } = await client
+            .from("orders")
+            .update({ status: "served" })
+            .eq("id", input.orderId);
 
-    return {
-        success: true,
-        message: `Pedido ${input.orderId.slice(0, 8)} marcado como entregado.`,
-    };
+        if (error) {
+            return {
+                success: false,
+                message: `Error al actualizar pedido: ${error.message ?? error}`,
+            };
+        }
+
+        revalidatePath("/seguimiento-pedido");
+
+        return {
+            success: true,
+            message: `Pedido ${input.orderId.slice(0, 8)} marcado como entregado.`,
+        };
+    } catch (err: any) {
+        return {
+            success: false,
+            message: `Error inesperado: ${err?.message ?? String(err)}`,
+        };
+    }
 }
