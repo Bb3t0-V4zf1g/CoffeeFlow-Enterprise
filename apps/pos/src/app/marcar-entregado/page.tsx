@@ -26,7 +26,7 @@ export default async function MarcarEntregadoPage() {
                                 Selecciona un ticket para finalizarlo y
                                 retirarlo de la lista de preparación.
                             </p>
-                        </div>
+                                                            `${i.name} x${i.quantity}`,
                         <div className="flex items-center gap-3">
                             <Link
                                 href="/"
@@ -43,9 +43,7 @@ export default async function MarcarEntregadoPage() {
                     {/* Listos */}
                     <section className="space-y-4">
                         <h2 className="text-lg font-semibold">Listos</h2>
-                        {(
-                            snapshot.readyTickets ?? []
-                        ).length === 0 ? (
+                        {(snapshot.readyTickets ?? []).length === 0 ? (
                             <article className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
                                 No hay pedidos listos.
                             </article>
@@ -68,6 +66,11 @@ export default async function MarcarEntregadoPage() {
                                                     )
                                                     .join(", ")}
                                             </p>
+                                            {ticket.notes ? (
+                                                <p className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                                                    Nota: {ticket.notes}
+                                                </p>
+                                            ) : null}
                                         </div>
 
                                         <div className="ml-4">
@@ -83,7 +86,9 @@ export default async function MarcarEntregadoPage() {
 
                     {/* En preparación */}
                     <section className="space-y-4">
-                        <h2 className="text-lg font-semibold">En preparación</h2>
+                        <h2 className="text-lg font-semibold">
+                            En preparación
+                        </h2>
                         {snapshot.tickets.length === 0 ? (
                             <article className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
                                 No hay pedidos en preparación.
@@ -107,6 +112,11 @@ export default async function MarcarEntregadoPage() {
                                                     )
                                                     .join(", ")}
                                             </p>
+                                            {ticket.notes ? (
+                                                <p className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                                                    Nota: {ticket.notes}
+                                                </p>
+                                            ) : null}
                                         </div>
 
                                         <div className="ml-4">
