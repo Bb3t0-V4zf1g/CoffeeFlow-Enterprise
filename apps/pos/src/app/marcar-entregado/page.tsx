@@ -26,7 +26,6 @@ export default async function MarcarEntregadoPage() {
                                 Selecciona un ticket para finalizarlo y
                                 retirarlo de la lista de preparación.
                             </p>
-                                                            `${i.name} x${i.quantity}`,
                         <div className="flex items-center gap-3">
                             <Link
                                 href="/"
